@@ -68,7 +68,7 @@ public class ReservaServiceImpl implements ReservaService{
 	@Override
 	public ReservaDto postReserva(ReservaDto reserva) throws IllegalArgumentException{
 		testeReserva(reserva);
-		if (!isDisponivel(reserva.getNumeroMesa(),reserva.getDataReserva())) 
+		if (isDisponivel(reserva.getNumeroMesa(),reserva.getDataReserva())) 
 			throw new IllegalArgumentException("Mesa já reservada para a data");
 		if(reserva.getIdCliente() != null)
 			reserva.setCliente(getCliente(reserva, reserva.getIdCliente()));
