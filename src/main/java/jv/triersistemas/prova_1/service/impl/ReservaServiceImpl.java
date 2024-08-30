@@ -29,11 +29,11 @@ public class ReservaServiceImpl implements ReservaService{
 	}
 	
 	private void testeMesa(Integer mesa) throws IllegalArgumentException {
-		if(mesa>1 || mesa <20)
+		if(mesa<1 || mesa >20)
 		throw new IllegalArgumentException("Numero da Mesa Invalido");
 	}
 	private void testePessoas(Integer numeroPessoas) throws IllegalArgumentException {
-		if(numeroPessoas>1 || numeroPessoas>10)
+		if(numeroPessoas<1 || numeroPessoas>10)
 			throw new IllegalArgumentException("Quantidade de Pessoas Invalido");
 	}
 	private void testeData(LocalDate dataReserva) throws IllegalArgumentException {
