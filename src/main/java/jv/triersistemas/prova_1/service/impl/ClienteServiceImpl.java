@@ -19,47 +19,45 @@ public class ClienteServiceImpl implements ClienteService{
 	
 	@Override
 	public List<ReservaDto> getReservas(ClienteDto cliente) throws IllegalArgumentException {
-		if(cliente.getId() != null) {
-			var clOpt = clRepository.findById(cliente.getId());
-			var clEnt = clOpt.orElseThrow(()-> new IllegalArgumentException("Valor do id invalido"));
-			return clEnt.getReservas().stream().map(ReservaDto::new).toList();
-		}else {
-			var clOpt = clRepository.findByNome(cliente.getNome());
-			var clEnt = clOpt.orElseThrow(()-> new IllegalArgumentException("Nome do cliente invalido"));
-			return clEnt.getReservas().stream().map(ReservaDto::new).toList();
-		}
-		
+		ClienteEntity clEnt;
+		if(cliente.getId() == null) 
+			clEnt = findByNome(cliente);
+		else 
+			clEnt = findById(cliente);
+		return clEnt.getReservas().stream().map(ReservaDto::new).toList();
 	}
 
 	@Override
-	public ClienteDto postCliente(ClienteDto cliente) {
-		validaCliente(cliente);
-		testeEmail(cliente.getEmail());
+	public ClienteDto postCliente(ClienteDto cliente) throws IllegalArgumentException{
+		if(emailExists(cliente.getEmail())) 
+			throw new IllegalArgumentException("Email já cadastrado");
 		var cliEnt = clRepository.save(new ClienteEntity(cliente));
 		return new ClienteDto(cliEnt);
+		
 	}
 	
 	@Override
 	public ClienteDto putCliente(ClienteDto cliente) {
-		validaCliente(cliente);
+		if (!emailEqualsId(cliente.getEmail(), cliente.getId()))
+			throw new IllegalArgumentException("Email já cadastrado");
 		var cliEnt = clRepository.save(new ClienteEntity(cliente, cliente.getId()));
 		return new ClienteDto(cliEnt);
 	}
 	
-	private void validaCliente(ClienteDto cliente) {
-		if (cliente.getNome() == null)
-			throw new IllegalArgumentException("Valor do nome está nulo/em branco");
-		if (cliente.getNome().isBlank())
-			throw new IllegalArgumentException("Valor do nome está nulo/em branco");
-		if (cliente.getEmail() == null)
-			throw new IllegalArgumentException("Valor do email está nulo/em branco");
-		if (cliente.getEmail().isBlank())
-			throw new IllegalArgumentException("Valor do email está nulo/em branco");
+	private ClienteEntity findById(ClienteDto cliente) throws IllegalArgumentException {
+		return clRepository.findById(cliente.getId()).orElseThrow(()-> new IllegalArgumentException("Valor do id invalido"));
+	}
+	private ClienteEntity findByNome(ClienteDto cliente) throws IllegalArgumentException {
+		return clRepository.findByNome(cliente.getNome()).stream().findFirst().orElseThrow(()-> new IllegalArgumentException("Valor do id invalido"));
 	}
 	
-	private void testeEmail(String email) {
-		if(!clRepository.findByEmail(email).isEmpty())
-			throw new IllegalArgumentException("Valor do email já cadastrado");
+	private boolean emailExists(String email) {
+		return clRepository.findByEmail(email).isPresent();
+	}
+	private boolean emailEqualsId(String email, Long id) {
+		var clOpt = clRepository.findByEmail(email);
+		var clBool = clOpt.map(l-> l.getId().equals(id));
+		return clBool.orElse(true);
 	}
 
 

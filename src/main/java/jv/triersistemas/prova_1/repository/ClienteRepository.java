@@ -11,6 +11,6 @@ import jv.triersistemas.prova_1.entity.ClienteEntity;
 @Repository
 public interface ClienteRepository extends JpaRepository<ClienteEntity, Long> {
 
-	Optional<ClienteEntity> findByNome(String nome);
-	List<ClienteEntity> findByEmail(String email);
+	List<ClienteEntity> findByNome(String nome);
+	Optional<ClienteEntity> findByEmail(String email);
 }

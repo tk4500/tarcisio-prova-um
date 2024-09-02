@@ -1,8 +1,10 @@
 package jv.triersistemas.prova_1.entity;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,11 +29,14 @@ public class ReservaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@Column(nullable = false)
 	private LocalDate dataReserva;
+	@Column(nullable = false)
 	private Integer numeroPessoas;
+	@Column(nullable = false)
 	private Integer numeroMesa;
 	@Enumerated(EnumType.ORDINAL)
-	private StatusEnum status = StatusEnum.FEITA;
+	private StatusEnum status;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cliente_id", nullable = false)
 	private ClienteEntity cliente;
@@ -40,7 +45,7 @@ public class ReservaEntity {
 		dataReserva = dto.getDataReserva();
 		numeroPessoas = dto.getNumeroPessoas();
 		numeroMesa = dto.getNumeroMesa();
-		status = dto.getStatus();
+		status = Optional.ofNullable(dto.getStatus()).orElse(StatusEnum.FEITA);
 		cliente = new ClienteEntity(dto.getCliente(), dto.getIdCliente());
 	}
 }
