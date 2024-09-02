@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity(name = "cliente")
 public class ClienteEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -28,13 +29,14 @@ public class ClienteEntity {
 	private String email;
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.DETACH)
 	private List<ReservaEntity> reservas;
-	
+
 	public ClienteEntity(ClienteDto dto) {
 		nome = dto.getNome();
 		email = dto.getEmail();
 	}
-	public ClienteEntity(ClienteDto dto, Long idCliente) {
-		id = idCliente;
+
+	public void atualizaCliente(ClienteDto dto) {
+		id = dto.getId();
 		nome = dto.getNome();
 		email = dto.getEmail();
 	}

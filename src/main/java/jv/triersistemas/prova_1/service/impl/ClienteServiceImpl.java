@@ -12,54 +12,54 @@ import jv.triersistemas.prova_1.repository.ClienteRepository;
 import jv.triersistemas.prova_1.service.ClienteService;
 
 @Service
-public class ClienteServiceImpl implements ClienteService{
+public class ClienteServiceImpl implements ClienteService {
 
-	@Autowired 
+	@Autowired
 	private ClienteRepository clRepository;
-	
+
 	@Override
-	public List<ReservaDto> getReservas(ClienteDto cliente) throws IllegalArgumentException {
-		ClienteEntity clEnt;
-		if(cliente.getId() == null) 
-			clEnt = findByNome(cliente);
-		else 
-			clEnt = findById(cliente);
+	public List<ReservaDto> getReservas(Long id) throws IllegalArgumentException {
+		var clEnt = findById(id);
 		return clEnt.getReservas().stream().map(ReservaDto::new).toList();
 	}
 
 	@Override
-	public ClienteDto postCliente(ClienteDto cliente) throws IllegalArgumentException{
-		if(emailExists(cliente.getEmail())) 
+	public ClienteDto postCliente(ClienteDto cliente) throws IllegalArgumentException {
+		if (emailExists(cliente.getEmail())) {
 			throw new IllegalArgumentException("Email já cadastrado");
+		}
 		var cliEnt = clRepository.save(new ClienteEntity(cliente));
 		return new ClienteDto(cliEnt);
-		
+
 	}
-	
+
 	@Override
-	public ClienteDto putCliente(ClienteDto cliente) {
-		if (!emailEqualsId(cliente.getEmail(), cliente.getId()))
+	public ClienteDto putCliente(ClienteDto cliente) throws IllegalArgumentException {
+		if (!emailEqualsId(cliente.getEmail(), cliente.getId())) {
 			throw new IllegalArgumentException("Email já cadastrado");
-		var cliEnt = clRepository.save(new ClienteEntity(cliente, cliente.getId()));
-		return new ClienteDto(cliEnt);
+		}
+		var cliEntAt = clRepository.save(atualizaCliente(cliente));
+		return new ClienteDto(cliEntAt);
 	}
-	
-	private ClienteEntity findById(ClienteDto cliente) throws IllegalArgumentException {
-		return clRepository.findById(cliente.getId()).orElseThrow(()-> new IllegalArgumentException("Valor do id invalido"));
+
+	private ClienteEntity findById(Long id) throws IllegalArgumentException {
+		return clRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Valor do id invalido"));
 	}
-	private ClienteEntity findByNome(ClienteDto cliente) throws IllegalArgumentException {
-		return clRepository.findByNome(cliente.getNome()).stream().findFirst().orElseThrow(()-> new IllegalArgumentException("Valor do id invalido"));
-	}
-	
+
 	private boolean emailExists(String email) {
 		return clRepository.findByEmail(email).isPresent();
 	}
+
 	private boolean emailEqualsId(String email, Long id) {
 		var clOpt = clRepository.findByEmail(email);
-		var clBool = clOpt.map(l-> l.getId().equals(id));
+		var clBool = clOpt.map(l -> l.getId().equals(id));
 		return clBool.orElse(true);
 	}
 
-
+	private ClienteEntity atualizaCliente(ClienteDto cliente) {
+		var cliEnt = findById(cliente.getId());
+		cliEnt.atualizaCliente(cliente);
+		return cliEnt;
+	}
 
 }

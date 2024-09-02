@@ -7,7 +7,7 @@ import jv.triersistemas.prova_1.dto.ReservaDto;
 
 public interface ClienteService {
 
-	List<ReservaDto> getReservas(ClienteDto cliente);
+	List<ReservaDto> getReservas(Long id);
 
 	ClienteDto postCliente(ClienteDto cliente);
 

@@ -40,12 +40,20 @@ public class ReservaEntity {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cliente_id", nullable = false)
 	private ClienteEntity cliente;
-	
+
 	public ReservaEntity(ReservaDto dto) {
 		dataReserva = dto.getDataReserva();
 		numeroPessoas = dto.getNumeroPessoas();
 		numeroMesa = dto.getNumeroMesa();
 		status = Optional.ofNullable(dto.getStatus()).orElse(StatusEnum.FEITA);
-		cliente = new ClienteEntity(dto.getCliente(), dto.getIdCliente());
 	}
+
+	public void alteraStatus(StatusEnum status) {
+		this.status = status;
+	}
+
+	public void atualizaCliente(ClienteEntity cliente) {
+		this.cliente = cliente;
+	}
+
 }
